@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<script type="text/x-template" id="app-template">
+	<div>
+		<div class="jumbotron">
+			<h1>Api usage examples.</h1>
+			<p class="lead">Here are some examples of how to Api can be used.</p>
+			<p>First, input your api key in field below. Then you can open any link in navbar at the top of page to see examples.</p>
+		</div>
+
+		<form>
+			<div class="form-group">
+				<label for="key">Api key:</label>
+				<input type="password" class="form-control" id="key" v-model="key">
+			</div>
+			<button class="btn btn-default" v-on:click.prevent="update_key">Submit</button>
+		</form>
+	</div>
+</script>
+
+<script type="text/javascript">
+	new Vue({
+		el: '#app',
+		template: "#app-template",
+		data: {
+			key: ''
+		},
+		methods: {
+			update_key() {
+				var self = this;
+				$.post("/home/UpdateKey", { key: this.key }, function (resp) {
+					console.log(resp);
+					self.show_toast("Key is updated, you can  continue to examples now")
+				})
+			},
+			show_toast(msg) {
+				var x = document.getElementById("toast")
+				x.innerHTML = msg;
+				x.className = "show";
+				setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+			}
+		}
+	});
+</script>

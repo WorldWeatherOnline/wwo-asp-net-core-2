@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "Search weather";
+}
+
+<script type="text/x-template" id="app-template">
+	<div style="padding: 4px">
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="key">Location:</label>
+				<input type="text" class="form-control" id="key" v-model="input.loc">
+			</div>
+			<button class="btn btn-default" v-on:click.prevent="update">Show</button>
+		</form>
+		<div class="container col-md-12">
+			<h2>Daily data</h2>
+			<table class="table table-striped">
+				<tbody>
+					<tr>
+						<th>Area</th>
+						<td>{{ data.nearest_area[0].areaName[0].value }}</td>
+					</tr>
+					<tr>
+						<th>Country</th>
+						<td>{{ data.nearest_area[0].country[0].value }}</td>
+					</tr>
+					<tr>
+						<th>Local time</th>
+						<td>{{ data.time_zone[0].localtime }}</td>
+					</tr>
+					<tr>
+						<th>Utc Offset</th>
+						<td>{{ data.time_zone[0].utcOffset }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript">
+	new Vue({
+		el: '#app',
+		template: "#app-template",
+		data: {
+			input: { loc: "London"},
+			data: {
+				nearest_area: [],
+
+				request: []
+			}
+		},
+		mounted() {
+			this.update()
+		},
+		methods: {
+			update() {
+				var self = this;
+				$.post("/home/tz", this.input, function (resp) { debugger; self.data = resp.data; self.$forceUpdate() })
+			}
+		}
+	});
+</script>

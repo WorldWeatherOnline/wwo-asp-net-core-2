@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "Search weather";
+}
+
+<script type="text/x-template" id="app-template">
+	<div style="padding: 4px">
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="key">Location:</label>
+				<input type="text" class="form-control" id="key" v-model="input.loc">
+			</div>
+			<button class="btn btn-default" v-on:click.prevent="update">Show</button>
+		</form>
+		<div class="container col-md-12">
+			<h2>Daily data</h2>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Area</th>
+						<th>Country</th>
+						<th>Population</th>
+						<th>Weather url</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="row in data">
+						<td>{{ row.areaName[0].value }}</td>
+						<td>{{ row.country[0].value }}</td>
+						<td>{{ row.population}}</td>
+						<td><a :href="row.weatherUrl[0].value">{{row.weatherUrl[0].value}}</a></td>
+
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript">
+	new Vue({
+		el: '#app',
+		template: "#app-template",
+		data: {
+			input: { loc: "London"},
+			data: {
+				ClimateAverages: [],
+				weather: [],
+				nearest_area: [],
+				request: []
+			}
+		},
+		mounted() {
+			this.update()
+		},
+		methods: {
+			update() {
+				var self = this;
+				$.post("/home/searchweather", this.input, function (resp) { self.data = resp.search_api.result })
+			}
+		}
+	});
+</script>

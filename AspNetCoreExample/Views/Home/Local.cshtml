@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Local weather";
+}
+
+<script type="text/x-template" id="app-template">
+	<div style="padding: 4px">
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="key">Location:</label>
+				<input type="text" class="form-control" id="key" v-model="input.loc">
+			</div>
+				<div class="form-group">
+					<label for="key">Number of days:</label>
+					<input type="number" class="form-control" id="days" v-model="input.days">
+				</div>
+			<button class="btn btn-default" v-on:click.prevent="update">Show</button>
+		</form>
+		<div class="container col-md-6">
+			<h2>Daily data</h2>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Min temp (C)</th>
+						<th>Max temp (C)</th>
+						<th>Uv-index</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="day in data.weather">
+						<td>{{ day.date }}</td>
+						<td>{{ day.mintempC }}</td>
+						<td>{{ day.maxtempC }}</td>
+						<td>{{ day.uvIndex }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="container panel">
+				<h2>Current info</h2>
+				<h3>Observation Time: {{data.current_condition[0].observation_time}}</h3>
+				<h3>Cloud cover(%): {{data.current_condition[0].cloudcover}}</h3>
+				<h3>Temp. (C): {{data.current_condition[0].temp_C}}</h3>
+			</div>
+		</div>
+		<div class="container col-md-6">
+			<h2>Monthly average data</h2>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Month name</th>
+						<th>Abs Max temp (C)</th>
+						<th>Avg Min temp (C)</th>
+						<th>Avg Rainfall</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="month in data.ClimateAverages[0].month">
+						<td>{{ month.name }}</td>
+						<td>{{ month.absMaxTemp }}</td>
+						<td>{{ month.avgMinTemp }}</td>
+						<td>{{ month.avgDailyRainfall }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript">
+	new Vue({
+		el: '#app',
+		template: "#app-template",
+		data: {
+			input: {
+				loc: '31.50,-12.50',
+				days: 5
+			},
+			data: {
+				ClimateAverages: [],
+				weather: [],
+				current_condition: []
+			}
+		},
+		mounted() {
+			this.update()
+		},
+		methods: {
+			update() {
+				var self = this;
+				$.post("/home/getlocalweather", this.input, function (resp) {
+					self.data = resp.data
+				})
+			}
+		}
+	});
+</script>

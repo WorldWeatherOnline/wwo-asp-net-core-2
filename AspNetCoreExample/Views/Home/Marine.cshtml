@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "Marine weather";
+}
+
+<script type="text/x-template" id="app-template">
+	<div style="padding: 4px">
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="key">Location:</label>
+				<input type="text" class="form-control" id="key" v-model="input.loc">
+			</div>
+			<button class="btn btn-default" v-on:click.prevent="update">Show</button>
+		</form>
+		<div class="container col-md-6">
+			<h2>Daily data</h2>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Min temp (C)</th>
+						<th>Max temp (C)</th>
+						<th>Uv-index</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="day in data.weather">
+						<td>{{ day.date }}</td>
+						<td>{{ day.mintempC }}</td>
+						<td>{{ day.maxtempC }}</td>
+						<td>{{ day.uvIndex }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="container col-md-6">
+			<h2>First day hourly</h2>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Time (hhmm)</th>
+						<th>Swell dir. </th>
+						<th>Swell Height (m)</th>
+						<th>Swell Period (sec)</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="hour in data.weather[0].hourly">
+						<td>{{ hour.time}}</td>
+						<td>{{ hour.swellDir16Point }}</td>
+						<td>{{ hour.swellHeight_m }}</td>
+						<td>{{ hour.swellPeriod_secs }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript">
+	new Vue({
+		el: '#app',
+		template: "#app-template",
+		data: {
+			input: {
+				loc: '31.50,-12.50'
+			},
+			data: {
+				ClimateAverages: [],
+				weather: [],
+				current_condition: []
+			}
+		},
+		mounted() {
+			this.update()
+		},
+		methods: {
+			update() {
+				var self = this;
+				$.post("/home/getmarineweather", this.input, function (resp) {
+					self.data = resp.data
+				})
+			}
+		}
+	});
+</script>

@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Past weather";
+}
+
+<script type="text/x-template" id="app-template">
+	<div style="padding: 4px">
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="key">Location:</label>
+				<input type="text" class="form-control" id="key" v-model="input.loc">
+			</div>
+			<div class="form-group">
+				<label for="date">Start date:</label>
+				<input type="date" class="form-control" id="date" v-model="input.date">
+			</div>
+			<div class="form-group">
+				<label for="enddate">End date:</label>
+				<input type="date" class="form-control" id="enddate" v-model="input.enddate">
+			</div>
+			<button class="btn btn-default" v-on:click.prevent="update">Show</button>
+		</form>
+		<div class="container col-md-6">
+
+			<div class="container panel">
+				<h2>Nearest location</h2>
+				<h3>Area name: {{data.nearest_area[0].areaName[0].value}}</h3>
+				<h3>Country {{data.nearest_area[0].country[0].value}}</h3>
+				<h3>Region: {{data.nearest_area[0].region[0].value}}</h3>
+				<h2>Query info</h2>
+				<h3>Query: {{data.request[0].query}}</h3>
+				<h3>Type: {{data.request[0].type}}</h3>
+			</div>
+		</div>
+		<div class="container col-md-6">
+			<h2>Daily data</h2>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Min temp (C)</th>
+						<th>Max temp (C)</th>
+						<th>Uv-index</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="day in data.weather">
+						<td>{{ day.date }}</td>
+						<td>{{ day.mintempC }}</td>
+						<td>{{ day.maxtempC }}</td>
+						<td>{{ day.uvIndex }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript">
+	new Vue({
+		el: '#app',
+		template: "#app-template",
+		data: {
+			input: { loc: "Paris", date: "2017-08-15", enddate: "2017-09-10" },
+			data: {
+				ClimateAverages: [],
+				weather: [],
+				nearest_area: [],
+				request: []
+			}
+		},
+		mounted() {
+			this.update()
+		},
+		methods: {
+			update() {
+				var self = this;
+				$.post("/home/getpastweather", this.input, function (resp) { self.data = resp.data })
+			}
+		}
+	});
+</script>
